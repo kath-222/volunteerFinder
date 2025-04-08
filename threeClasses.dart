@@ -1,12 +1,11 @@
 import 'dart:io';
 
-// Enum for Opportunity Status
+// Enums
 enum OpportunityStatus {
   active,
   completed,
 }
 
-// Enum for Opportunity Category
 enum OpportunityCategory {
   education,
   medicalHelp,
@@ -15,14 +14,14 @@ enum OpportunityCategory {
   others,
 }
 
-// 1. User Class: for user data and volunteer participation
+// User Class
 class User {
   String _name;
   String _username;
   String _password;
   String? _location;
   String? _profilePicture;
-  List<Opportunity> _participatedOpportunities = [];  // Track opportunities user has joined
+  List<Opportunity> _participatedOpportunities = [];
 
   User({
     required String name,
@@ -36,7 +35,6 @@ class User {
         _location = location,
         _profilePicture = profilePicture;
 
-  // getters and setters
   String get name => _name;
   String get username => _username;
   String get password => _password;
@@ -50,13 +48,11 @@ class User {
   set location(String? value) => _location = value;
   set profilePicture(String? value) => _profilePicture = value;
 
-  // add participated opportunity
   void addParticipation(Opportunity opportunity) {
     _participatedOpportunities.add(opportunity);
     print('$name has signed up for opportunity "${opportunity.title}".');
   }
 
-  // display User Info
   void displayUserInfo() {
     print('Name: $_name');
     print('Username: $_username');
@@ -64,16 +60,19 @@ class User {
     if (_profilePicture != null) print('Profile Picture: $_profilePicture');
   }
 
-  // display Participated Opportunities
   void displayParticipatedOpportunities() {
-    print('$name has participated in the following opportunities:');
-    for (var op in _participatedOpportunities) {
-      op.displayOpportunity();
+    if (_participatedOpportunities.isEmpty) {
+      print('$name has not participated in any opportunities yet.');
+    } else {
+      print('$name has participated in:');
+      for (var op in _participatedOpportunities) {
+        op.displayOpportunity();
+      }
     }
   }
 }
 
-// 2. Opportunity Class: for opportunity details
+// Opportunity Class
 class Opportunity {
   String _title;
   String _description;
@@ -81,7 +80,7 @@ class Opportunity {
   String _imageUrl;
   OpportunityStatus _status;
   String _location;
-  int _duration; // Duration in hours/days
+  int _duration;
   int _volunteersNeeded;
   String _requirements;
 
@@ -105,7 +104,6 @@ class Opportunity {
         _volunteersNeeded = volunteersNeeded,
         _requirements = requirements;
 
-  // getters and setters
   String get title => _title;
   String get description => _description;
   OpportunityCategory get category => _category;
@@ -126,8 +124,8 @@ class Opportunity {
   set volunteersNeeded(int value) => _volunteersNeeded = value;
   set requirements(String value) => _requirements = value;
 
-  // display opportunity details
   void displayOpportunity() {
+    print('---------------------------------------');
     print('Title: $_title');
     print('Category: ${_category.toString().split('.').last}');
     print('Description: $_description');
@@ -136,37 +134,37 @@ class Opportunity {
     print('Volunteers Needed: $_volunteersNeeded');
     print('Requirements: $_requirements');
     print('Status: ${_status.toString().split('.').last}');
+    print('---------------------------------------');
   }
 }
 
-// 3. Organization Class: for organization details, goals, and news
+// Organization Class
 class Organization {
   String _orgName;
   String _description;
   String _location;
-  String _goals; // Goals for the organization
+  String _goals;
   String _contactInfo;
   List<Opportunity> _postedOpportunities = [];
-  List<String> _newsUpdates = []; // News and updates about the organization
+  List<String> _newsUpdates = [];
 
   Organization({
     required String orgName,
     required String description,
     required String location,
     required String contactInfo,
-    required String goals,  // Goals for the organization
+    required String goals,
   })  : _orgName = orgName,
         _description = description,
         _location = location,
         _contactInfo = contactInfo,
         _goals = goals;
 
-  // getters and setters
   String get orgName => _orgName;
   String get description => _description;
   String get location => _location;
   String get contactInfo => _contactInfo;
-  String get goals => _goals; // Getter for goals
+  String get goals => _goals;
   List<Opportunity> get postedOpportunities => _postedOpportunities;
   List<String> get newsUpdates => _newsUpdates;
 
@@ -174,21 +172,18 @@ class Organization {
   set description(String value) => _description = value;
   set location(String value) => _location = value;
   set contactInfo(String value) => _contactInfo = value;
-  set goals(String value) => _goals = value; // Setter for goals
+  set goals(String value) => _goals = value;
 
-  // add Opportunity to Organization
   void addOpportunity(Opportunity opportunity) {
     _postedOpportunities.add(opportunity);
     print('Opportunity "${opportunity.title}" added by $_orgName');
   }
 
-  // add News Update
   void addNewsUpdate(String news) {
     _newsUpdates.add(news);
     print('News update added: $news');
   }
 
-  // display Organization Information
   void displayOrganizationInfo() {
     print('Organization: $_orgName');
     print('Location: $_location');
@@ -205,112 +200,200 @@ class Organization {
   }
 }
 
+// Global Lists
 List<Opportunity> opportunities = [];
 List<User> users = [];
 List<Organization> organizations = [];
 
-void showMenu() {
-  print('\n--- Welcome to the Local Volunteer Finder ---');
-  print('1. Add Opportunity');
-  print('2. View All Opportunities');
-  print('3. View Organization Information');
-  print('4. Update Opportunity');
-  print('5. Delete Opportunity');
-  print('6. Search Opportunities by Category');
-  print('7. Exit');
-  print('Please choose one of the menu numbers (1-7):');
-}
-
+// Main Function
 void main() {
-  bool running = true;
+  while (true) {
+    print('\n====== Volunteer Console Application Menu ======');
+    print('1. Display All Opportunities');
+    print('2. Add New Opportunity');
+    print('3. Update Opportunity');
+    print('4. Delete Opportunity');
+    print('5. Search Opportunities by Category');
+    print('6. Sign Up a User for an Opportunity');
+    print('7. Display User Participation');
+    print('8. Exit');
+    stdout.write('Choose an option (1-8): ');
 
-  while (running) {
-    showMenu();
-    int choice = int.parse(stdin.readLineSync()!);
-
-    switch (choice) {
-      case 1: // add Opportunity
-        print('Enter title for the new opportunity:');
-        String title = stdin.readLineSync()!;
-        print('Enter description for the opportunity:');
-        String description = stdin.readLineSync()!;
-        print('Enter category for the opportunity (1: Education, 2: MedicalHelp, 3: Environment, 4: Relief, 5: Others):');
-        int categoryChoice = int.parse(stdin.readLineSync()!);
-        OpportunityCategory category = OpportunityCategory.values[categoryChoice - 1];
-        print('Enter image URL for the opportunity:');
-        String imageUrl = stdin.readLineSync()!;
-        print('Enter location for the opportunity:');
-        String location = stdin.readLineSync()!;
-        print('Enter duration (in hours):');
-        int duration = int.parse(stdin.readLineSync()!);
-        print('Enter number of volunteers needed:');
-        int volunteersNeeded = int.parse(stdin.readLineSync()!);
-        print('Enter requirements for the opportunity:');
-        String requirements = stdin.readLineSync()!;
-        Opportunity opportunity = Opportunity(
-          title: title,
-          description: description,
-          category: category,
-          imageUrl: imageUrl,
-          location: location,
-          duration: duration,
-          volunteersNeeded: volunteersNeeded,
-          requirements: requirements,
-        );
-        opportunities.add(opportunity);
-        print('Opportunity "$title" added!');
+    String? input = stdin.readLineSync();
+    switch (input) {
+      case '1':
+        displayAllOpportunities();
         break;
-
-      case 2: // view all opportunities
-        if (opportunities.isEmpty) {
-          print("No opportunities available.");
-        } else {
-          for (var op in opportunities) {
-            op.displayOpportunity();
-          }
-        }
+      case '2':
+        handleAddOpportunity();
         break;
-
-      case 3: // view Organization information
-        print('Enter Organization name to view information:');
-        String orgName = stdin.readLineSync()!;
-        Organization org = organizations.firstWhere((org) => org.orgName == orgName, orElse: () => Organization(orgName: '', description: '', location: '', contactInfo: '', goals: ''));
-        org.displayOrganizationInfo();
+      case '3':
+        handleUpdateOpportunity();
         break;
-
-      case 4: // update Opportunity
-        print('Enter title of the opportunity to update:');
-        String oldTitle = stdin.readLineSync()!;
-        Opportunity opportunity = opportunities.firstWhere((op) => op.title == oldTitle);
-        print('Enter new title:');
-        opportunity.title = stdin.readLineSync()!;
-        print('Enter new description:');
-        opportunity.description = stdin.readLineSync()!;
+      case '4':
+        handleDeleteOpportunity();
         break;
-
-      case 5: // delete Opportunity
-        print('Enter title of the opportunity to delete:');
-        String title = stdin.readLineSync()!;
-        opportunities.removeWhere((op) => op.title == title);
-        print('Opportunity "$title" deleted');
+      case '5':
+        handleSearchByCategory();
         break;
-
-      case 6: // search Opportunities by category
-        print('Enter category to search for opportunities (1: Education, 2: MedicalHelp, 3: Environment, 4: Relief, 5: Others):');
-        int categoryChoice = int.parse(stdin.readLineSync()!);
-        OpportunityCategory category = OpportunityCategory.values[categoryChoice - 1];
-        for (var op in opportunities.where((op) => op.category == category)) {
-          op.displayOpportunity();
-        }
+      case '6':
+        handleUserSignUp();
         break;
-
-      case 7: // exit
-        print('Exiting...');
-        running = false; // stop the loop and exit the program
+      case '7':
+        handleDisplayUserParticipation();
         break;
-
+      case '8':
+        print('Exiting program...');
+        return;
       default:
-        print('Invalid choice, please try again.');
+        print('⚠ Invalid option.');
     }
   }
 }
+
+// Menu Operations
+void displayAllOpportunities() {
+  if (opportunities.isEmpty) {
+    print('❌ No opportunities available.');
+    return;
+  }
+  print("\n--- All Volunteer Opportunities ---");
+  for (var op in opportunities) {
+    op.displayOpportunity();
+  }
+}
+
+void handleAddOpportunity() {
+  try {
+    stdout.write('Title: ');
+    String title = stdin.readLineSync()!;
+    stdout.write('Description: ');
+    String desc = stdin.readLineSync()!;
+    stdout.write('Category (education, medicalHelp, environment, relief, others): ');
+    String catInput = stdin.readLineSync()!.toLowerCase();
+    OpportunityCategory category = OpportunityCategory.values.firstWhere(
+            (e) => e.toString().split('.').last == catInput);
+
+    stdout.write('Image URL: ');
+    String imageUrl = stdin.readLineSync()!;
+    stdout.write('Location: ');
+    String location = stdin.readLineSync()!;
+    stdout.write('Duration (in hours/days): ');
+    int duration = int.parse(stdin.readLineSync()!);
+    stdout.write('Volunteers Needed: ');
+    int volNeeded = int.parse(stdin.readLineSync()!);
+    stdout.write('Requirements: ');
+    String req = stdin.readLineSync()!;
+
+    Opportunity opportunity = Opportunity(
+      title: title,
+      description: desc,
+      category: category,
+      imageUrl: imageUrl,
+      location: location,
+      duration: duration,
+      volunteersNeeded: volNeeded,
+      requirements: req,
+    );
+
+    opportunities.add(opportunity);
+    print('✅ Opportunity "$title" added.');
+  } catch (e) {
+    print('⚠ Error: ${e.toString()}');
+  }
+}
+
+void handleUpdateOpportunity() {
+  try {
+    stdout.write('Enter title of the opportunity to update: ');
+    //String oldTitle = stdin.readLineSync()!;
+    String oldTitle = stdin.readLineSync()!.trim();
+
+    Opportunity op = opportunities.firstWhere((o) => o.title == oldTitle);
+
+    stdout.write('New Title: ');
+    op.title = stdin.readLineSync()!;
+    stdout.write('New Description: ');
+    op.description = stdin.readLineSync()!;
+    print('✅ Opportunity updated.');
+  } catch (e) {
+    print('⚠ Error: ${e.toString()}');
+    ;
+  }
+}
+
+void handleDeleteOpportunity() {
+  try {
+    stdout.write('Enter title to delete: ');
+    String title = stdin.readLineSync()!;
+    opportunities.removeWhere((o) => o.title == title);
+    print('🗑️ Opportunity "$title" deleted.');
+  } catch (e) {
+    print('⚠ Error: ${e.toString()}');
+  }
+}
+
+void handleSearchByCategory() {
+  try {
+    stdout.write('Enter category: ');
+    String catInput = stdin.readLineSync()!.toLowerCase();
+    OpportunityCategory category = OpportunityCategory.values.firstWhere(
+            (e) => e.toString().split('.').last == catInput);
+
+    var filtered = opportunities.where((o) => o.category == category).toList();
+    if (filtered.isEmpty) {
+      print('No opportunities found in this category.');
+    } else {
+      for (var op in filtered) {
+        op.displayOpportunity();
+      }
+    }
+  } catch (e) {
+    print('⚠ Error: ${e.toString()}');
+  }
+}
+
+void handleUserSignUp() {
+  try {
+    stdout.write('Enter your username: ');
+    String username = stdin.readLineSync()!;
+    User user = users.firstWhere((u) => u.username == username, orElse: () {
+      stdout.write('User not found. Create new user? (yes/no): ');
+      String? create = stdin.readLineSync();
+      if (create!.toLowerCase() == 'yes') {
+        stdout.write('Enter full name: ');
+        String name = stdin.readLineSync()!;
+        stdout.write('Password: ');
+        String pass = stdin.readLineSync()!;
+        User newUser = User(name: name, username: username, password: pass);
+        users.add(newUser);
+        return newUser;
+      } else {
+        throw Exception('User not found.');
+      }
+    });
+
+    stdout.write('Enter opportunity title to sign up: ');
+    String title = stdin.readLineSync()!;
+    Opportunity op = opportunities.firstWhere((o) => o.title == title);
+    user.addParticipation(op);
+  } catch (e) {
+    print('⚠ Error: ${e.toString()}');
+  }
+}
+
+
+void handleDisplayUserParticipation() {
+  stdout.write('Enter username: ');
+  String username = stdin.readLineSync()!;
+  User? user = users.any((u) => u.username == username)
+      ? users.firstWhere((u) => u.username == username)
+      : null;
+
+  if (user != null) {
+    user.displayParticipatedOpportunities();
+  } else {
+    print('❌ User not found.');
+  }
+}
+
